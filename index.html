@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Forex Trader Kaushik</title>
+<meta name="description" content="The Forex Trader Kaushik.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= BACKGROUND FX ================= -->
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-glow bg-glow--emerald" aria-hidden="true"></div>
+<div class="bg-glow bg-glow--gold" aria-hidden="true"></div>
+<div class="bg-noise" aria-hidden="true"></div>
+
+<!-- ================= NAVBAR ================= -->
+<header class="navbar" id="navbar">
+  <div class="navbar__inner">
+    <a href="#home" class="navbar__logo">
+      <span class="navbar__logo-mark">TK</span>
+      <span class="navbar__logo-text">THE FOREX TRADER <strong>KAUSHIK</strong></span>
+    </a>
+
+    <nav class="navbar__nav" id="navbarNav">
+      <a href="#home" class="navbar__link">Home</a>
+      <a href="#about" class="navbar__link">About</a>
+      <a href="#strategy" class="navbar__link">Strategy</a>
+      <a href="#performance" class="navbar__link">Performance</a>
+      <a href="#journal" class="navbar__link">Journal</a>
+      <a href="#contact" class="navbar__link">Contact</a>
+    </nav>
+
+    <div class="navbar__actions">
+      <a href="#contact" class="btn btn--primary btn--sm">Start Your Journey <span class="btn__arrow">→</span></a>
+      <button class="navbar__burger" id="navbarBurger" aria-label="Toggle menu" aria-expanded="false" aria-controls="navbarNav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="home">
+  <div class="hero__inner">
+
+    <div class="hero__content">
+      <p class="eyebrow reveal">THE FOREX TRADER</p>
+      <h1 class="hero__headline reveal">Trading With Precision.<br>Thinking Beyond The Chart.</h1>
+
+      <div class="hero__actions reveal">
+        <a href="#strategy" class="btn btn--primary">Explore My Strategy</a>
+        <a href="#performance" class="btn btn--ghost">View Performance</a>
+      </div>
+
+      <p class="hero__disclaimer reveal">Trading involves substantial risk. Past performance does not guarantee future results.</p>
+    </div>
+
+    <div class="hero__visual reveal">
+      <div class="terminal">
+        <div class="terminal__bar">
+          <div class="terminal__dots"><span></span><span></span><span></span></div>
+          <span class="terminal__title">KAUSHIK-FX <span class="terminal__title-dim">// LIVE</span></span>
+          <span class="badge badge--live"><span class="live-dot"></span>LIVE</span>
+        </div>
+
+        <div class="terminal__chart">
+          <canvas id="heroChart" width="640" height="300" aria-label="Live forex price chart" role="img"></canvas>
+          <div class="chart-controls" role="group" aria-label="Live chart interval">
+            <button type="button" class="chart-controls__button is-active" data-chart-interval="1H">1H</button>
+            <button type="button" class="chart-controls__button" data-chart-interval="1M">1M</button>
+            <button type="button" class="chart-controls__button" data-chart-interval="5M">5M</button>
+            <button type="button" class="chart-controls__button" data-chart-interval="15M">15M</button>
+            <button type="button" class="chart-controls__button" data-chart-interval="4H">4H</button>
+            <button type="button" class="chart-controls__button" data-chart-interval="1D">1D</button>
+          </div>
+          <div class="terminal__price">
+            <label class="terminal__price-label" for="heroSymbol">LIVE MARKET DATA</label>
+            <select class="terminal__symbol-select" id="heroSymbol" aria-label="Select market instrument">
+              <option>EUR/USD</option><option>GBP/USD</option><option>USD/JPY</option><option>USD/CHF</option>
+              <option>AUD/USD</option><option>USD/CAD</option><option>NZD/USD</option><option>GBP/JPY</option><option>XAU/USD</option>
+            </select>
+            <span class="terminal__price-value" id="heroPrice">Market data temporarily unavailable</span>
+            <span class="terminal__price-change" id="heroPriceChange"></span>
+            <span class="terminal__quote-meta" id="heroQuoteMeta">Awaiting market data</span>
+          </div>
+        </div>
+
+        <div class="terminal__pairs" id="terminalPairs">
+          <!-- populated from Twelve Data by JS -->
+        </div>
+      </div>
+
+      <div class="float-card float-card--1" aria-hidden="true">
+        <span class="float-card__label">Win Rate</span>
+        <span class="float-card__value">68%</span>
+      </div>
+      <div class="float-card float-card--2" aria-hidden="true">
+        <span class="float-card__label">Risk / Trade</span>
+        <span class="float-card__value">1.0%</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= MARKET TICKER ================= -->
+<section class="ticker" aria-label="Live market ticker">
+  <div class="ticker__label"><span class="live-dot"></span> LIVE MARKET DATA <span id="tickerStatus">· CONNECTING</span></div>
+  <div class="ticker__track-wrap">
+    <div class="ticker__track" id="tickerTrack">
+      <div class="ticker-item ticker__item" data-symbol="EUR/USD"></div>
+      <div class="ticker-item ticker__item" data-symbol="GBP/USD"></div>
+      <div class="ticker-item ticker__item" data-symbol="USD/JPY"></div>
+      <div class="ticker-item ticker__item" data-symbol="USD/CHF"></div>
+      <div class="ticker-item ticker__item" data-symbol="AUD/USD"></div>
+      <div class="ticker-item ticker__item" data-symbol="USD/CAD"></div>
+      <div class="ticker-item ticker__item" data-symbol="NZD/USD"></div>
+      <div class="ticker-item ticker__item" data-symbol="GBP/JPY"></div>
+      <div class="ticker-item ticker__item" data-symbol="XAU/USD"></div>
+    </div>
+  </div>
+  <p class="ticker__disclaimer">Market data may be delayed depending on the data provider and subscription plan.</p>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="about" id="about">
+  <div class="section-inner about__grid">
+
+    <div class="about__portrait reveal">
+      <div class="portrait">
+        <img class="portrait__image" src="koushik.png" alt="Kaushik, The Trader Kaushik">
+      </div>
+      <div class="badge badge--outline">Focused on Process, Not Predictions</div>
+    </div>
+
+    <div class="about__content">
+      <p class="eyebrow reveal">MEET KAUSHIK</p>
+      <h2 class="section-title reveal">The trader behind the charts.</h2>
+      <p class="about__credentials reveal"><strong>Full Time Trader 📈📉</strong><span>I’m NISM Certified Reg No-202500055982</span></p>
+
+      <p class="about__text reveal">Kaushik approaches the market as a probability game, not a prediction contest. His work centers on reading price action and market structure, identifying where liquidity sits, and only acting when several independent signals line up. Position sizing and stop placement are decided before an idea is ever considered a trade.</p>
+
+      <p class="about__text reveal">Behind the charts is a study in temperament as much as technique — recognising when a setup is genuinely there, and when the pull to act is just impatience wearing a disguise. Consistency, to Kaushik, is built one well-managed loss at a time.</p>
+
+      <ul class="about__list reveal">
+        <li>Technical analysis &amp; price action</li>
+        <li>Market structure &amp; liquidity mapping</li>
+        <li>Risk management &amp; position sizing</li>
+        <li>Trading psychology &amp; emotional control</li>
+      </ul>
+
+      <div class="stat-row reveal">
+        <div class="stat">
+          <span class="stat__value" data-count="5" data-suffix="+">0</span>
+          <span class="stat__label">Years<br>Market Experience</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value" data-count="1000" data-suffix="+">0</span>
+          <span class="stat__label">Charts<br>Studied</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value" data-count="85" data-suffix="%+">0</span>
+          <span class="stat__label">Focus On<br>Risk Discipline</span>
+        </div>
+      </div>
+      <p class="fine-print reveal">Editable placeholder statistics — presented for illustration, not as verified results.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= PHILOSOPHY ================= -->
+<section class="philosophy">
+  <div class="section-inner">
+    <p class="eyebrow eyebrow--center reveal">TRADING PHILOSOPHY</p>
+    <h2 class="section-title section-title--center reveal">"My Edge Isn't A Secret Indicator."</h2>
+
+    <div class="principle-grid">
+      <article class="principle-card reveal">
+        <span class="principle-card__num">01</span>
+        <h3 class="principle-card__title">Discipline</h3>
+        <p class="principle-card__text">Follow the setup. Respect the stop. Never chase the market.</p>
+      </article>
+      <article class="principle-card reveal">
+        <span class="principle-card__num">02</span>
+        <h3 class="principle-card__title">Risk First</h3>
+        <p class="principle-card__text">Protecting capital comes before looking for returns.</p>
+      </article>
+      <article class="principle-card reveal">
+        <span class="principle-card__num">03</span>
+        <h3 class="principle-card__title">Patience</h3>
+        <p class="principle-card__text">The best trade is sometimes no trade at all.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STRATEGY / FRAMEWORK ================= -->
+<section class="framework" id="strategy">
+  <div class="section-inner">
+    <p class="eyebrow reveal">THE FRAMEWORK</p>
+    <h2 class="section-title reveal">The Kaushik Framework</h2>
+    <p class="section-lede reveal">A hypothetical, repeatable process for evaluating and managing trades — built to remove guesswork, not add mystique.</p>
+
+    <div class="framework-grid">
+      <article class="framework-card reveal">
+        <h3 class="framework-card__title">Market Structure</h3>
+        <p class="framework-card__text">Identify trends, breakouts, support, resistance, liquidity zones, and key levels.</p>
+      </article>
+      <article class="framework-card reveal">
+        <h3 class="framework-card__title">Confluence</h3>
+        <p class="framework-card__text">Combine price action, structure, momentum, and higher-timeframe context.</p>
+      </article>
+      <article class="framework-card reveal">
+        <h3 class="framework-card__title">Entry</h3>
+        <p class="framework-card__text">Wait for confirmation instead of entering purely from prediction.</p>
+      </article>
+      <article class="framework-card reveal">
+        <h3 class="framework-card__title">Risk Management</h3>
+        <p class="framework-card__text">Use predefined stop-loss levels and controlled position sizing.</p>
+      </article>
+      <article class="framework-card reveal">
+        <h3 class="framework-card__title">Exit</h3>
+        <p class="framework-card__text">Use risk/reward targets and market structure to manage exits.</p>
+      </article>
+    </div>
+
+    <div class="flow reveal" aria-label="Analyze, Confirm, Execute, Manage, Review">
+      <span class="flow__step">Analyze</span>
+      <span class="flow__arrow">→</span>
+      <span class="flow__step">Confirm</span>
+      <span class="flow__arrow">→</span>
+      <span class="flow__step">Execute</span>
+      <span class="flow__arrow">→</span>
+      <span class="flow__step">Manage</span>
+      <span class="flow__arrow">→</span>
+      <span class="flow__step">Review</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PERFORMANCE ================= -->
+<section class="performance" id="performance">
+  <div class="section-inner">
+    <p class="eyebrow reveal">THE NUMBERS</p>
+    <h2 class="section-title reveal">Performance, Not Promises.</h2>
+    <div class="badge badge--outline reveal">Illustrative / Demo Performance Data</div>
+
+    <div class="metric-grid">
+      <div class="metric-card reveal">
+        <span class="metric-card__value">68%</span>
+        <span class="metric-card__label">Win Rate</span>
+      </div>
+      <div class="metric-card reveal">
+        <span class="metric-card__value">1 : 2.4</span>
+        <span class="metric-card__label">Risk / Reward</span>
+      </div>
+      <div class="metric-card reveal">
+        <span class="metric-card__value">1.82</span>
+        <span class="metric-card__label">Profit Factor</span>
+      </div>
+      <div class="metric-card reveal">
+        <span class="metric-card__value">1%</span>
+        <span class="metric-card__label">Average Risk</span>
+      </div>
+      <div class="metric-card reveal">
+        <span class="metric-card__value">247</span>
+        <span class="metric-card__label">Trades Reviewed</span>
+      </div>
+    </div>
+
+    <div class="perf-chart reveal">
+      <div class="perf-chart__header">
+        <h3 class="perf-chart__title">Hypothetical Monthly Performance</h3>
+        <div class="toggle" id="perfToggle" role="group" aria-label="Chart view toggle">
+          <button class="toggle__btn is-active" data-mode="monthly" type="button">Monthly</button>
+          <button class="toggle__btn" data-mode="cumulative" type="button">Cumulative</button>
+        </div>
+      </div>
+      <canvas id="perfCanvas" width="900" height="320" role="img" aria-label="Hypothetical monthly performance chart"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ================= JOURNAL ================= -->
+<section class="journal" id="journal">
+  <div class="section-inner">
+    <p class="eyebrow reveal">THE JOURNAL</p>
+    <h2 class="section-title reveal">Recent Trade Journal</h2>
+    <div class="badge badge--outline reveal">Demo Trades — For Illustration Only</div>
+
+    <div class="journal__filters reveal" id="journalFilters" role="group" aria-label="Filter trades">
+      <button class="filter-btn is-active" data-filter="all" type="button">All</button>
+      <button class="filter-btn" data-filter="forex" type="button">Forex</button>
+      <button class="filter-btn" data-filter="gold" type="button">Gold</button>
+      <button class="filter-btn" data-filter="winners" type="button">Winners</button>
+      <button class="filter-btn" data-filter="losers" type="button">Losers</button>
+    </div>
+
+    <div class="journal__grid" id="journalGrid">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ================= RISK CALCULATOR ================= -->
+<section class="calculator">
+  <div class="section-inner">
+    <p class="eyebrow eyebrow--center reveal">RISK TOOL</p>
+    <h2 class="section-title section-title--center reveal">"Know Your Risk Before You Enter."</h2>
+
+    <div class="calc-card reveal">
+      <div class="calc-card__inputs">
+        <label class="field">
+          <span class="field__label">Account Balance (USD)</span>
+          <input type="number" id="calcBalance" class="field__input" value="10000" min="0" step="100">
+        </label>
+        <label class="field">
+          <span class="field__label">Risk %</span>
+          <input type="number" id="calcRisk" class="field__input" value="1" min="0" max="100" step="0.1">
+        </label>
+        <label class="field">
+          <span class="field__label">Stop Loss (pips)</span>
+          <input type="number" id="calcStop" class="field__input" value="25" min="0.1" step="0.1">
+        </label>
+        <label class="field">
+          <span class="field__label">Pip Value (USD, per 1 lot)</span>
+          <input type="number" id="calcPipValue" class="field__input" value="10" min="0.01" step="0.01">
+        </label>
+      </div>
+
+      <div class="calc-card__results">
+        <div class="calc-result">
+          <span class="calc-result__label">Risk Amount</span>
+          <span class="calc-result__value" id="calcRiskAmount">$100.00</span>
+        </div>
+        <div class="calc-result">
+          <span class="calc-result__label">Estimated Position Size</span>
+          <span class="calc-result__value" id="calcPositionSize">0.40 lots</span>
+        </div>
+        <button class="btn btn--ghost btn--sm" id="calcReset" type="button">Reset</button>
+      </div>
+    </div>
+    <p class="fine-print reveal">This calculator is for educational purposes only and does not constitute financial advice.</p>
+  </div>
+</section>
+
+<!-- ================= EDUCATION ================= -->
+<section class="education">
+  <div class="section-inner">
+    <p class="eyebrow reveal">LEARN</p>
+    <h2 class="section-title reveal">From Charts To Clarity</h2>
+
+    <div class="article-grid">
+      <article class="article-card reveal" data-article="structure">
+        <span class="article-card__category">Technical Analysis</span>
+        <h3 class="article-card__title">How To Read Market Structure</h3>
+        <p class="article-card__desc">Understand trends, breakouts, liquidity, and key levels.</p>
+        <div class="article-card__meta">
+          <span>6 min read</span>
+          <button class="article-card__link" type="button">Read Article →</button>
+        </div>
+      </article>
+
+      <article class="article-card reveal" data-article="onepercent">
+        <span class="article-card__category">Risk Management</span>
+        <h3 class="article-card__title">The 1% Rule</h3>
+        <p class="article-card__desc">Why controlling downside matters more than chasing huge returns.</p>
+        <div class="article-card__meta">
+          <span>5 min read</span>
+          <button class="article-card__link" type="button">Read Article →</button>
+        </div>
+      </article>
+
+      <article class="article-card reveal" data-article="psychology">
+        <span class="article-card__category">Psychology</span>
+        <h3 class="article-card__title">Trading Psychology</h3>
+        <p class="article-card__desc">How discipline and emotional control influence decision-making.</p>
+        <div class="article-card__meta">
+          <span>7 min read</span>
+          <button class="article-card__link" type="button">Read Article →</button>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TESTIMONIALS ================= -->
+<section class="testimonials">
+  <div class="section-inner">
+    <p class="eyebrow eyebrow--center reveal">FEEDBACK</p>
+    <h2 class="section-title section-title--center reveal">What Students Say</h2>
+    <div class="badge badge--outline badge--center reveal">Demo Testimonials — Placeholder Content</div>
+
+    <div class="testimonial-grid">
+      <blockquote class="testimonial-card reveal">
+        <p class="testimonial-card__quote">"Kaushik's biggest lesson wasn't how to enter a trade. It was knowing when not to."</p>
+        <footer class="testimonial-card__author">— Anirban Roy</footer>
+      </blockquote>
+      <blockquote class="testimonial-card reveal">
+        <p class="testimonial-card__quote">"The framework gave me a process to follow instead of a feeling to chase."</p>
+        <footer class="testimonial-card__author">— Sayan Chatterjee</footer>
+      </blockquote>
+      <blockquote class="testimonial-card reveal">
+        <p class="testimonial-card__quote">"I stopped moving my stop loss. That one change did more than any indicator ever did."</p>
+        <footer class="testimonial-card__author">— Debanjana Mukherjee</footer>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="cta">
+  <div class="section-inner cta__inner reveal">
+    <h2 class="cta__title">Trade With A Plan.<br>Not With Emotion.</h2>
+    <p class="cta__text">Follow Kaushik's approach to market analysis, disciplined risk management, and continuous improvement.</p>
+    <div class="cta__actions">
+      <a href="#contact" class="btn btn--primary">Connect With Kaushik</a>
+      <a href="#journal" class="btn btn--ghost">Explore The Journal</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="contact" id="contact">
+  <div class="section-inner contact__grid">
+    <div class="contact__intro reveal">
+      <p class="eyebrow">GET IN TOUCH</p>
+      <h2 class="section-title">Start The Conversation</h2>
+      <p class="about__text">Questions about the framework, mentorship, or collaborations — send a message and Kaushik will get back to you.</p>
+      <div class="market-status"><span class="live-dot"></span> <span id="marketStatus">MARKET STATUS · CONNECTING</span><small>Last updated: <span id="marketUpdated">Awaiting data</span></small></div>
+
+      <div class="social-links">
+        <a href="https://www.instagram.com/thetraderkoushik1/" class="social-links__item" aria-label="Instagram"><svg class="social-links__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1"></circle></svg><span>Instagram</span></a>
+        <a href="https://www.youtube.com/@TheTraderKoushik-r8m1e" class="social-links__item" aria-label="YouTube"><svg class="social-links__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8.2a2.7 2.7 0 0 0-1.9-1.9C17.4 5.8 12 5.8 12 5.8s-5.4 0-7.1.5A2.7 2.7 0 0 0 3 8.2 28 28 0 0 0 2.6 12 28 28 0 0 0 3 15.8a2.7 2.7 0 0 0 1.9 1.9c1.7.5 7.1.5 7.1.5s5.4 0 7.1-.5a2.7 2.7 0 0 0 1.9-1.9 28 28 0 0 0 .4-3.8 28 28 0 0 0-.4-3.8Z"></path><path class="social-links__icon-fill" d="m10 9 5 3-5 3V9Z"></path></svg><span>YouTube</span></a>
+        <a href="#" class="social-links__item" aria-label="Telegram"><svg class="social-links__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 4-3 16-6-4-3 3-.5-5L19 7 8 13l-5-2 18-7Z"></path></svg><span>Telegram</span></a>
+        <a href="#" class="social-links__item" aria-label="LinkedIn"><svg class="social-links__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8.5V19M5 5v.1M10 19v-6a3 3 0 0 1 6 0v6M10 11v8M19 19v-6a3 3 0 0 0-6-1"></path></svg><span>LinkedIn</span></a>
+      </div>
+    </div>
+
+    <div class="contact__email">
+      <span class="field__label">Email</span>
+      <a href="mailto:pritamroy13052003@gmail.com">pritamroy13052003@gmail.com</a>
+      <a class="btn btn--ghost btn--sm" href="mailto:pritamroy13052003@gmail.com">Email Kaushik <span class="btn__arrow">→</span></a>
+    </div>
+
+    <form class="contact-form reveal" id="contactForm" action="https://formspree.io/f/xvkpjvkk" method="POST" novalidate>
+      <input type="hidden" name="_subject" value="New Message — The Trader Kaushik">
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="form-honeypot">
+      <label class="field">
+        <span class="field__label">Name</span>
+        <input type="text" class="field__input" id="cfName" name="name" required>
+        <span class="field__error" id="cfNameError"></span>
+      </label>
+      <label class="field">
+        <span class="field__label">Email</span>
+        <input type="email" class="field__input" id="cfEmail" name="email" required>
+        <span class="field__error" id="cfEmailError"></span>
+      </label>
+      <label class="field">
+        <span class="field__label">Subject</span>
+        <input type="text" class="field__input" id="cfSubject" name="subject" required>
+        <span class="field__error" id="cfSubjectError"></span>
+      </label>
+      <label class="field">
+        <span class="field__label">Message</span>
+        <textarea class="field__input field__input--area" id="cfMessage" name="message" rows="5" required></textarea>
+        <span class="field__error" id="cfMessageError"></span>
+      </label>
+      <button type="submit" class="btn btn--primary btn--full" id="contactSubmit">Send Message</button>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="section-inner footer__grid">
+    <div class="footer__brand">
+      <span class="navbar__logo-text">THE FOREX TRADER <strong>KAUSHIK</strong></span>
+      <p class="footer__tagline">Discipline. Data. Decisions.</p>
+    </div>
+
+    <nav class="footer__links" aria-label="Footer">
+      <a href="#about">About</a>
+      <a href="#strategy">Strategy</a>
+      <a href="#performance">Performance</a>
+      <a href="#journal">Journal</a>
+      <a href="#contact">Contact</a>
+      <a href="#">Privacy</a>
+      <a href="#">Risk Disclosure</a>
+    </nav>
+
+    <p class="footer__risk">
+      <strong>Risk Disclosure:</strong> Forex and CFD trading involve significant risk and may not be suitable for all investors. This website is for educational and informational purposes only and does not constitute financial advice or investment recommendations.
+    </p>
+
+    <p class="footer__copyright">© 2026 The Trader Kaushik. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ================= ARTICLE MODAL ================= -->
+<div class="modal" id="articleModal" aria-hidden="true">
+  <div class="modal__backdrop" id="modalBackdrop"></div>
+  <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal__close" id="modalClose" aria-label="Close article">✕</button>
+    <span class="article-card__category" id="modalCategory"></span>
+    <h3 class="modal__title" id="modalTitle"></h3>
+    <div class="modal__body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ================= TOAST ================= -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
