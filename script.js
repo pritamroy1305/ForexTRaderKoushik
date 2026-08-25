@@ -444,62 +444,7 @@
     drawPerfChart();
   });
 
-  /* ---------- 7. TRADE JOURNAL ---------- */
-  const trades = [
-    { pair: "EUR/USD", dir: "buy", entry: "1.0812", sl: "1.0782", tp: "1.0882", result: "+2.1R", rr: "1 : 2.3", win: true, cat: "forex" },
-    { pair: "XAU/USD", dir: "sell", entry: "2431.40", sl: "2441.00", tp: "2405.20", result: "+1.7R", rr: "1 : 1.7", win: true, cat: "gold" },
-    { pair: "GBP/USD", dir: "buy", entry: "1.2611", sl: "1.2581", tp: "1.2701", result: "\u22121R", rr: "1 : 3.0", win: false, cat: "forex" },
-    { pair: "USD/JPY", dir: "sell", entry: "155.40", sl: "155.90", tp: "153.90", result: "+2.8R", rr: "1 : 3.0", win: true, cat: "forex" },
-    { pair: "XAU/USD", dir: "buy", entry: "2398.10", sl: "2389.00", tp: "2416.00", result: "+1.9R", rr: "1 : 2.1", win: true, cat: "gold" },
-    { pair: "EUR/USD", dir: "sell", entry: "1.0904", sl: "1.0932", tp: "1.0850", result: "\u22121R", rr: "1 : 1.9", win: false, cat: "forex" },
-  ];
-
-  const journalGrid = document.getElementById("journalGrid");
-  function renderTrades() {
-    journalGrid.innerHTML = trades
-      .map(
-        (t) => `
-      <article class="trade-card" data-cat="${t.cat}" data-win="${t.win}">
-        <div class="trade-card__top">
-          <span class="trade-card__pair">${t.pair}</span>
-          <span class="trade-card__dir trade-card__dir--${t.dir}">${t.dir.toUpperCase()}</span>
-        </div>
-        <div class="trade-card__rows">
-          <div class="trade-card__row"><span>Entry</span><span>${t.entry}</span></div>
-          <div class="trade-card__row"><span>Stop Loss</span><span>${t.sl}</span></div>
-          <div class="trade-card__row"><span>Take Profit</span><span>${t.tp}</span></div>
-        </div>
-        <div class="trade-card__result">
-          <span class="trade-card__rr">R:R ${t.rr}</span>
-          <span class="trade-card__pnl ${t.win ? "trade-card__pnl--win" : "trade-card__pnl--loss"}">${t.result}</span>
-        </div>
-      </article>`
-      )
-      .join("");
-  }
-  renderTrades();
-
-  const journalFilters = document.getElementById("journalFilters");
-  journalFilters.addEventListener("click", (e) => {
-    const btn = e.target.closest(".filter-btn");
-    if (!btn) return;
-    journalFilters.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("is-active"));
-    btn.classList.add("is-active");
-    const filter = btn.dataset.filter;
-
-    document.querySelectorAll(".trade-card").forEach((card) => {
-      const cat = card.dataset.cat;
-      const win = card.dataset.win === "true";
-      let show = true;
-      if (filter === "forex") show = cat === "forex";
-      else if (filter === "gold") show = cat === "gold";
-      else if (filter === "winners") show = win;
-      else if (filter === "losers") show = !win;
-      card.hidden = !show;
-    });
-  });
-
-  /* ---------- 8. RISK CALCULATOR ---------- */
+  /* ---------- 7. RISK CALCULATOR ---------- */
   const calcBalance = document.getElementById("calcBalance");
   const calcRisk = document.getElementById("calcRisk");
   const calcStop = document.getElementById("calcStop");
