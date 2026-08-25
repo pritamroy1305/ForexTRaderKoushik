@@ -213,8 +213,7 @@ main, header, footer{ position:relative; z-index:2; }
 .navbar__logo{ display:flex; align-items:center; gap:10px; }
 .navbar__logo-mark{
   width:34px; height:34px; border-radius:9px; display:grid; place-items:center;
-  background:linear-gradient(135deg, var(--emerald) 0%, var(--emerald-deep) 100%);
-  color:#04140d; font-family:var(--font-mono); font-weight:700; font-size:13px;
+  object-fit:contain;
 }
 .navbar__logo-text{ font-family:var(--font-display); font-size:14.5px; letter-spacing:0.04em; color:var(--text-muted); }
 .navbar__logo-text strong{ color:var(--text); font-weight:600; }
