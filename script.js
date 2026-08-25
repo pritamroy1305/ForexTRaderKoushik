@@ -1,5 +1,5 @@
 /* =========================================================
-   THE TRADER KAUSHIK — SCRIPT
+  THE TRADER KOUSHIK — SCRIPT
   Live Twelve Data integration for the public frontend.
   IMPORTANT: a browser API key is visible to visitors. For production,
   move these requests behind a backend/serverless function.
