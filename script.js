@@ -227,13 +227,19 @@
   // Live ticker rendering is added below the existing layout modules.
 
   /* ---------- 5. LIVE MARKET DATA ---------- */
-  const API_KEY = "99e0273a06f4474382e4c503bc78ac89";
-  const marketSymbols = ["EUR/USD", "GBP/USD", "USD/JPY", "USD/CHF", "AUD/USD", "USD/CAD", "NZD/USD", "GBP/JPY", "XAU/USD"];
+  const API_KEY = "99e0273a06f4474382e4c503bc78ac8f";
+  const marketSymbols = ["EUR/USD", "GBP/USD", "USD/JPY", "USD/CHF", "AUD/USD", "USD/CAD", "NZD/USD", "GBP/JPY", "EUR/GBP", "EUR/JPY", "AUD/JPY", "GBP/CHF", "USD/SGD", "XAU/USD"];
   const intervalMap = { "1M": "1min", "5M": "5min", "15M": "15min", "1H": "1h", "4H": "4h", "1D": "1day" };
-  const marketState = new Map();
+  const quoteBatchSize = 7;
+  let quoteCursor = 0;
+  const marketCacheKey = "koushik-market-quotes";
+  let cachedQuotes = {};
+  try { cachedQuotes = JSON.parse(localStorage.getItem(marketCacheKey) || "{}"); } catch (error) { cachedQuotes = {}; }
+  const marketState = new Map(Object.entries(cachedQuotes));
   const tickerStatus = document.getElementById("tickerStatus");
   const heroSymbol = document.getElementById("heroSymbol");
   const heroQuoteMeta = document.getElementById("heroQuoteMeta");
+  const isApiKeyConfigured = API_KEY !== "YOUR_TWELVE_DATA_API_KEY";
 
   function formatPrice(value, symbol) {
     const decimals = symbol.includes("JPY") || symbol === "XAU/USD" ? 2 : 4;
@@ -250,10 +256,14 @@
     document.getElementById("marketUpdated").textContent = marketTime();
   }
   async function requestMarket(path) {
-    if (API_KEY === "YOUR_TWELVE_DATA_API_KEY") throw new Error("Configure API_KEY first");
+    if (!isApiKeyConfigured) throw new Error("Configure API_KEY first");
     const response = await fetch(`https://api.twelvedata.com/${path}${path.includes("?") ? "&" : "?"}apikey=${encodeURIComponent(API_KEY)}`);
     const data = await response.json();
-    if (!response.ok || data.status === "error" || data.code) throw new Error(data.message || "Market request failed");
+    if (!response.ok || data.status === "error" || data.code) {
+      const error = new Error(data.message || "Market request failed");
+      error.code = data.code || response.status;
+      throw error;
+    }
     return data;
   }
   function renderMarketRows() {
@@ -279,31 +289,38 @@
     heroQuoteMeta.textContent = `Bid ${quote.bid || "—"} · Ask ${quote.ask || "—"} · Updated ${quote.updated}`;
   }
   async function refreshQuotes() {
-    if (API_KEY === "YOUR_TWELVE_DATA_API_KEY") { setMarketStatus("CONFIGURE API KEY"); setStatusPanel("MARKET DATA UNAVAILABLE · CONFIGURE API KEY"); renderMarketRows(); renderHeroQuote(); return; }
-    const results = await Promise.allSettled(marketSymbols.map(async (symbol) => [symbol, await requestMarket(`quote?symbol=${encodeURIComponent(symbol)}`)]));
+    if (!isApiKeyConfigured) { setMarketStatus("CONFIGURE API KEY"); setStatusPanel("MARKET DATA UNAVAILABLE · CONFIGURE API KEY"); renderMarketRows(); renderHeroQuote(); return; }
+    const rotatingSymbols = marketSymbols.slice(quoteCursor).concat(marketSymbols.slice(0, quoteCursor));
+    const symbolsToRefresh = [heroSymbol.value, ...rotatingSymbols.filter((symbol) => symbol !== heroSymbol.value)].slice(0, quoteBatchSize);
+    quoteCursor = (quoteCursor + quoteBatchSize) % marketSymbols.length;
+    const results = await Promise.allSettled(symbolsToRefresh.map(async (symbol) => [symbol, await requestMarket(`quote?symbol=${encodeURIComponent(symbol)}`)]));
     let successfulQuotes = 0;
+    let lastError = null;
     results.forEach((result, index) => {
-      const symbol = marketSymbols[index];
+      const symbol = symbolsToRefresh[index];
       if (result.status === "fulfilled") {
         const quote = result.value[1];
         marketState.set(symbol, { price: quote.close, change: quote.percent_change, bid: quote.bid, ask: quote.ask, updated: marketTime() });
         successfulQuotes += 1;
       } else {
-        marketState.delete(symbol);
+        lastError = result.reason;
       }
     });
+    try { localStorage.setItem(marketCacheKey, JSON.stringify(Object.fromEntries(marketState))); } catch (error) {}
     renderMarketRows();
     renderHeroQuote();
     if (successfulQuotes > 0) {
       setMarketStatus(`LIVE · ${successfulQuotes}/${marketSymbols.length} UPDATED`);
       setStatusPanel("FOREX MARKET OPEN");
     } else {
-      setMarketStatus("MARKET DATA UNAVAILABLE");
-      setStatusPanel("MARKET DATA UNAVAILABLE");
+      const detail = lastError && lastError.code ? ` · ${lastError.code}` : "";
+      const hasCachedQuotes = marketState.size > 0;
+      setMarketStatus(`${hasCachedQuotes ? "CACHED DATA" : "MARKET DATA UNAVAILABLE"}${detail}`);
+      setStatusPanel(`${hasCachedQuotes ? "CACHED MARKET DATA" : "MARKET DATA UNAVAILABLE"}${detail}`);
     }
   }
   async function loadChart(interval) {
-    if (API_KEY === "YOUR_TWELVE_DATA_API_KEY") { drawLiveChart([]); return; }
+    if (!isApiKeyConfigured) { drawLiveChart([]); return; }
     try { const data = await requestMarket(`time_series?symbol=${encodeURIComponent(heroSymbol.value)}&interval=${intervalMap[interval]}&outputsize=48`); drawLiveChart((data.values || []).reverse()); }
     catch (error) { drawLiveChart([]); }
   }
