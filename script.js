@@ -7,6 +7,12 @@
 (function () {
   "use strict";
 
+  const reloadOnOpenKey = "koushik-reloaded-on-open";
+  if (!sessionStorage.getItem(reloadOnOpenKey)) {
+    sessionStorage.setItem(reloadOnOpenKey, "true");
+    setTimeout(() => window.location.reload(), 2500);
+  }
+
   /* ---------- 1. NAVBAR: scroll state + mobile menu ---------- */
   const navbar = document.getElementById("navbar");
   const burger = document.getElementById("navbarBurger");
@@ -230,7 +236,7 @@
   const API_KEY = "99e0273a06f4474382e4c503bc78ac8f";
   const marketSymbols = ["EUR/USD", "GBP/USD", "USD/JPY", "USD/CHF", "AUD/USD", "USD/CAD", "NZD/USD", "GBP/JPY", "EUR/GBP", "EUR/JPY", "AUD/JPY", "GBP/CHF", "USD/SGD", "XAU/USD"];
   const intervalMap = { "1M": "1min", "5M": "5min", "15M": "15min", "1H": "1h", "4H": "4h", "1D": "1day" };
-  const quoteBatchSize = 7;
+  const quoteBatchSize = 4;
   let quoteCursor = 0;
   const marketCacheKey = "koushik-market-quotes";
   let cachedQuotes = {};
