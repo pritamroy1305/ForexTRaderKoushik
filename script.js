@@ -234,7 +234,7 @@
 
   /* ---------- 5. LIVE MARKET DATA ---------- */
   const API_KEY = "99e0273a06f4474382e4c503bc78ac8f";
-  const marketSymbols = ["EUR/USD", "GBP/USD", "USD/JPY", "USD/CHF", "AUD/USD", "USD/CAD", "NZD/USD", "GBP/JPY", "EUR/GBP", "EUR/JPY", "AUD/JPY", "GBP/CHF", "USD/SGD", "XAU/USD"];
+  const marketSymbols = ["EUR/USD", "GBP/USD", "USD/JPY", "USD/CHF", "AUD/USD", "USD/CAD", "XAU/USD"];
   const intervalMap = { "1M": "1min", "5M": "5min", "15M": "15min", "1H": "1h", "4H": "4h", "1D": "1day" };
   const quoteBatchSize = 4;
   let quoteCursor = 0;
@@ -333,7 +333,11 @@
   function drawLiveChart(values) {
     const context = heroCanvas.getContext("2d"); context.clearRect(0, 0, heroCanvas.width, heroCanvas.height); context.strokeStyle = "rgba(255,255,255,0.05)";
     for (let i = 0; i < 4; i++) { const y = 20 + i * 86; context.beginPath(); context.moveTo(0, y); context.lineTo(heroCanvas.width, y); context.stroke(); }
-    if (!values.length) return;
+    if (!values.length) {
+      animProgress = 1;
+      drawHeroChart();
+      return;
+    }
     const prices = values.flatMap((c) => [Number(c.high), Number(c.low)]), min = Math.min(...prices), max = Math.max(...prices), range = max - min || 1;
     const yFor = (price) => 20 + (1 - (price - min) / range) * 260, slot = heroCanvas.width / values.length;
     context.beginPath(); context.strokeStyle = "rgba(23,217,142,0.55)"; context.lineWidth = 1.5;

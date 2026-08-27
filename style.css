@@ -295,10 +295,13 @@ main, header, footer{ position:relative; z-index:2; }
 .terminal__title{ font-family:var(--font-mono); font-size:12.5px; color:var(--text-muted); letter-spacing:0.04em; }
 .terminal__title-dim{ color:var(--emerald); }
 .terminal__bar .badge{ margin-left:auto; }
-.terminal__chart{ position:relative; padding:18px 18px 0; }
-.terminal__chart canvas{ width:100%; height:auto; display:block; }
+.terminal__chart{ position:relative; padding:18px 18px 0; isolation:isolate; }
+.terminal__chart::before{ content:""; position:absolute; inset:18px 18px 0; z-index:-1; background:radial-gradient(circle at 72% 48%, rgba(23,217,142,.1), transparent 42%); pointer-events:none; }
+.terminal__chart canvas{ width:100%; height:auto; display:block; opacity:.9; }
 .terminal__price{
-  position:absolute; top:30px; left:30px; display:flex; flex-direction:column; gap:2px;
+  position:absolute; top:30px; left:30px; z-index:2; display:flex; flex-direction:column; gap:2px;
+  max-width:calc(100% - 60px); padding:10px 14px 11px; border:1px solid rgba(23,217,142,.16); border-radius:10px;
+  background:rgba(7,9,10,.62); backdrop-filter:blur(7px); box-shadow:0 12px 26px rgba(0,0,0,.2);
   font-family:var(--font-mono);
 }
 .terminal__price-label{ font-size:11px; color:var(--text-faint); letter-spacing:0.08em; }
@@ -306,9 +309,10 @@ main, header, footer{ position:relative; z-index:2; }
 .terminal__price-change{ font-size:12.5px; font-weight:600; }
 .terminal__price-change--up{ color:var(--emerald); }
 .terminal__price-change--down{ color:var(--red); }
-.terminal__symbol-select{ background:transparent; border:0; color:var(--text); font:600 20px var(--font-mono); padding:0; }
+.terminal__symbol-select{ width:max-content; max-width:100%; background:transparent; border:0; color:var(--text); font:600 20px var(--font-mono); padding:0; }
+.terminal__symbol-select option{ background:var(--bg-elevated); color:var(--text); }
 .terminal__quote-meta{ color:var(--text-faint); font-size:10px; }
-.chart-controls{ display:flex; gap:5px; margin:0 0 12px; }
+.chart-controls{ position:relative; z-index:2; display:flex; gap:5px; margin:0 0 12px; }
 .chart-controls__button{ background:transparent; border:1px solid var(--border); border-radius:6px; color:var(--text-muted); font:600 11px var(--font-mono); padding:5px 8px; }
 .chart-controls__button:hover,.chart-controls__button.is-active{ color:var(--emerald); border-color:var(--emerald); }
 .terminal__pairs{ padding:16px 18px 20px; display:flex; flex-direction:column; gap:2px; }
