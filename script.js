@@ -246,6 +246,7 @@
   const heroSymbol = document.getElementById("heroSymbol");
   const heroQuoteMeta = document.getElementById("heroQuoteMeta");
   const isApiKeyConfigured = API_KEY !== "YOUR_TWELVE_DATA_API_KEY";
+  let chartRequestId = 0;
 
   function formatPrice(value, symbol) {
     const decimals = symbol.includes("JPY") || symbol === "XAU/USD" ? 2 : 4;
@@ -326,16 +327,43 @@
     }
   }
   async function loadChart(interval) {
-    if (!isApiKeyConfigured) { drawLiveChart([]); return; }
-    try { const data = await requestMarket(`time_series?symbol=${encodeURIComponent(heroSymbol.value)}&interval=${intervalMap[interval]}&outputsize=48`); drawLiveChart((data.values || []).reverse()); }
-    catch (error) { drawLiveChart([]); }
+    const requestId = ++chartRequestId;
+    const symbol = heroSymbol.value;
+    if (!isApiKeyConfigured) { drawLiveChart([], symbol, interval); return; }
+    try {
+      const data = await requestMarket(`time_series?symbol=${encodeURIComponent(symbol)}&interval=${intervalMap[interval]}&outputsize=48`);
+      if (requestId === chartRequestId && symbol === heroSymbol.value) drawLiveChart((data.values || []).reverse(), symbol, interval);
+    } catch (error) {
+      if (requestId === chartRequestId && symbol === heroSymbol.value) drawLiveChart([], symbol, interval);
+    }
   }
-  function drawLiveChart(values) {
+  function drawLiveChart(values, symbol = heroSymbol.value, interval = "1H") {
     const context = heroCanvas.getContext("2d"); context.clearRect(0, 0, heroCanvas.width, heroCanvas.height); context.strokeStyle = "rgba(255,255,255,0.05)";
     for (let i = 0; i < 4; i++) { const y = 20 + i * 86; context.beginPath(); context.moveTo(0, y); context.lineTo(heroCanvas.width, y); context.stroke(); }
     if (!values.length) {
-      animProgress = 1;
-      drawHeroChart();
+      const seed = [...`${symbol}-${interval}`].reduce((total, character) => total + character.charCodeAt(0), 0);
+      const fallbackRandom = seededRandom(seed);
+      const fallbackCandles = [];
+      let price = 100;
+      for (let index = 0; index < 46; index++) {
+        const open = price;
+        const close = open + (fallbackRandom() - 0.48) * 4;
+        const high = Math.max(open, close) + fallbackRandom() * 2;
+        const low = Math.min(open, close) - fallbackRandom() * 2;
+        fallbackCandles.push({ open, close, high, low });
+        price = close;
+      }
+      const prices = fallbackCandles.flatMap((candle) => [candle.high, candle.low]);
+      const min = Math.min(...prices), max = Math.max(...prices), range = max - min || 1;
+      const yFor = (priceValue) => 20 + (1 - (priceValue - min) / range) * 260;
+      const slot = heroCanvas.width / fallbackCandles.length;
+      fallbackCandles.forEach((candle, index) => {
+        const x = index * slot + slot / 2, up = candle.close >= candle.open;
+        context.strokeStyle = up ? "#17d98e" : "#f2555c";
+        context.fillStyle = up ? "rgba(23,217,142,0.85)" : "rgba(242,85,92,0.85)";
+        context.beginPath(); context.moveTo(x, yFor(candle.high)); context.lineTo(x, yFor(candle.low)); context.stroke();
+        context.fillRect(x - slot * .28, Math.min(yFor(candle.open), yFor(candle.close)), slot * .56, Math.max(Math.abs(yFor(candle.open) - yFor(candle.close)), 2));
+      });
       return;
     }
     const prices = values.flatMap((c) => [Number(c.high), Number(c.low)]), min = Math.min(...prices), max = Math.max(...prices), range = max - min || 1;
