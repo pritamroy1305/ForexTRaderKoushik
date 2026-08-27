@@ -351,8 +351,8 @@
   /* ---------- 6. PERFORMANCE CHART ---------- */
   const perfCanvas = document.getElementById("perfCanvas");
   const perfCtx = perfCanvas.getContext("2d");
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"];
-  const monthlyReturns = [2.1, -0.8, 3.4, 1.6, -1.2, 2.9, 4.1, 1.8]; // % per month, demo data
+  const months = ["Profit", "Loss"];
+  const monthlyReturns = [1104.51, -77.76];
   let cumulativeReturns = [];
   monthlyReturns.reduce((acc, v, i) => {
     const next = acc + v;
@@ -390,7 +390,7 @@
       perfCtx.lineTo(w - padR, y);
       perfCtx.stroke();
       const val = max - (range / 4) * i;
-      perfCtx.fillText(val.toFixed(1) + "%", 4, y + 4);
+      perfCtx.fillText("$" + val.toFixed(2), 4, y + 4);
     }
 
     if (perfMode === "monthly") {

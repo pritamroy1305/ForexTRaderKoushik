@@ -253,40 +253,53 @@
   <div class="section-inner">
     <p class="eyebrow reveal">THE NUMBERS</p>
     <h2 class="section-title reveal">Performance, Not Promises.</h2>
-    <div class="badge badge--outline reveal">Illustrative / Demo Performance Data</div>
+    <div class="badge badge--outline reveal">Account 20086807 · Weekly Results</div>
 
     <div class="metric-grid">
       <div class="metric-card reveal">
-        <span class="metric-card__value">68%</span>
-        <span class="metric-card__label">Win Rate</span>
+        <span class="metric-card__value">$1,026.75</span>
+        <span class="metric-card__label">Net Profit</span>
       </div>
       <div class="metric-card reveal">
-        <span class="metric-card__value">1 : 2.4</span>
-        <span class="metric-card__label">Risk / Reward</span>
+        <span class="metric-card__value">14</span>
+        <span class="metric-card__label">Closed Orders</span>
       </div>
       <div class="metric-card reveal">
-        <span class="metric-card__value">1.82</span>
-        <span class="metric-card__label">Profit Factor</span>
+        <span class="metric-card__value">0.88</span>
+        <span class="metric-card__label">Trading Volume (Lots)</span>
       </div>
       <div class="metric-card reveal">
-        <span class="metric-card__value">1%</span>
-        <span class="metric-card__label">Average Risk</span>
+        <span class="metric-card__value">$0.56</span>
+        <span class="metric-card__label">Equity</span>
       </div>
       <div class="metric-card reveal">
-        <span class="metric-card__value">247</span>
-        <span class="metric-card__label">Trades Reviewed</span>
+        <span class="metric-card__value">92.9%</span>
+        <span class="metric-card__label">Win Rate (13 of 14)</span>
       </div>
+    </div>
+
+    <div class="performance-summary">
+      <div class="performance-summary__item reveal"><span class="performance-summary__label">Profit</span><strong class="performance-summary__value performance-summary__value--up">+$1,104.51</strong></div>
+      <div class="performance-summary__item reveal"><span class="performance-summary__label">Loss</span><strong class="performance-summary__value performance-summary__value--down">-$77.76</strong></div>
+      <div class="performance-summary__item reveal"><span class="performance-summary__label">Profitable / Unprofitable</span><strong class="performance-summary__value">13 / 1</strong></div>
+      <div class="performance-summary__item reveal"><span class="performance-summary__label">Average / Maximum Volume</span><strong class="performance-summary__value">0.06 / 0.10 lots</strong></div>
+      <div class="performance-summary__item reveal"><span class="performance-summary__label">Unrealized P/L</span><strong class="performance-summary__value">$0.00</strong></div>
     </div>
 
     <div class="perf-chart reveal">
       <div class="perf-chart__header">
-        <h3 class="perf-chart__title">Hypothetical Monthly Performance</h3>
+        <h3 class="perf-chart__title">Profit and Loss Breakdown</h3>
         <div class="toggle" id="perfToggle" role="group" aria-label="Chart view toggle">
-          <button class="toggle__btn is-active" data-mode="monthly" type="button">Monthly</button>
-          <button class="toggle__btn" data-mode="cumulative" type="button">Cumulative</button>
+          <button class="toggle__btn is-active" data-mode="monthly" type="button">Gross P/L</button>
+          <button class="toggle__btn" data-mode="cumulative" type="button">Net Result</button>
         </div>
       </div>
-      <canvas id="perfCanvas" width="900" height="320" role="img" aria-label="Hypothetical monthly performance chart"></canvas>
+      <canvas id="perfCanvas" width="900" height="320" role="img" aria-label="Profit and loss breakdown chart"></canvas>
+    </div>
+
+    <div class="performance-summary performance-summary--trades">
+      <div class="performance-summary__item reveal"><span class="performance-summary__label">Buy Positions</span><strong class="performance-summary__value performance-summary__value--down">2 trades · -$27.30 · 50.0% win rate</strong></div>
+      <div class="performance-summary__item reveal"><span class="performance-summary__label">Sell Positions</span><strong class="performance-summary__value performance-summary__value--up">12 trades · +$1,054.05 · 100.0% win rate</strong></div>
     </div>
   </div>
 </section>
