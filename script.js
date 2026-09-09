@@ -380,27 +380,40 @@
   }));
   refreshQuotes(); loadChart("1H"); setInterval(refreshQuotes, 60000);
 
-  /* ---------- 6. PERFORMANCE CHART ---------- */
-  const perfCanvas = document.getElementById("perfCanvas");
-  const perfCtx = perfCanvas.getContext("2d");
-  const months = ["Profit", "Loss"];
-  const monthlyReturns = [1104.51, -77.76];
-  let cumulativeReturns = [];
-  monthlyReturns.reduce((acc, v, i) => {
-    const next = acc + v;
-    cumulativeReturns[i] = next;
-    return next;
-  }, 0);
+  /* ---------- 6. PERFORMANCE TABS & CHARTS ---------- */
+  const perfChartSets = {
+    weekly: {
+      labels: ["Profit", "Loss"],
+      monthlyReturns: [1104.51, -77.76],
+      mode: "monthly",
+    },
+    exness: {
+      labels: ["Profit", "Loss"],
+      monthlyReturns: [5675.85, -1435.27],
+      mode: "monthly",
+    },
+  };
 
-  let perfMode = "monthly";
+  Object.values(perfChartSets).forEach((set) => {
+    set.cumulativeReturns = [];
+    set.monthlyReturns.reduce((acc, v, i) => {
+      const next = acc + v;
+      set.cumulativeReturns[i] = next;
+      return next;
+    }, 0);
+  });
 
-  function drawPerfChart() {
-    const w = perfCanvas.width, h = perfCanvas.height;
-    perfCtx.clearRect(0, 0, w, h);
+  function drawPerfChart(chartKey) {
+    const canvas = document.querySelector(`.perf-canvas[data-chart="${chartKey}"]`);
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const set = perfChartSets[chartKey];
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
     const padL = 46, padR = 20, padT = 20, padB = 36;
     const chartW = w - padL - padR, chartH = h - padT - padB;
 
-    const data = perfMode === "monthly" ? monthlyReturns : cumulativeReturns;
+    const data = set.mode === "monthly" ? set.monthlyReturns : set.cumulativeReturns;
     const max = Math.max(...data, 0);
     const min = Math.min(...data, 0);
     const range = max - min || 1;
@@ -410,22 +423,21 @@
     }
     const zeroY = yFor(0);
 
-    // gridlines
-    perfCtx.strokeStyle = "rgba(255,255,255,0.06)";
-    perfCtx.lineWidth = 1;
-    perfCtx.font = "11px 'JetBrains Mono', monospace";
-    perfCtx.fillStyle = "rgba(147,153,156,0.9)";
+    ctx.strokeStyle = "rgba(255,255,255,0.06)";
+    ctx.lineWidth = 1;
+    ctx.font = "11px 'JetBrains Mono', monospace";
+    ctx.fillStyle = "rgba(147,153,156,0.9)";
     for (let i = 0; i <= 4; i++) {
       const y = padT + (chartH / 4) * i;
-      perfCtx.beginPath();
-      perfCtx.moveTo(padL, y);
-      perfCtx.lineTo(w - padR, y);
-      perfCtx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(w - padR, y);
+      ctx.stroke();
       const val = max - (range / 4) * i;
-      perfCtx.fillText("$" + val.toFixed(2), 4, y + 4);
+      ctx.fillText("$" + val.toFixed(2), 4, y + 4);
     }
 
-    if (perfMode === "monthly") {
+    if (set.mode === "monthly") {
       const slot = chartW / data.length;
       const barW = slot * 0.46;
       data.forEach((v, i) => {
@@ -433,7 +445,7 @@
         const y = yFor(v);
         const top = Math.min(y, zeroY);
         const height = Math.max(Math.abs(y - zeroY), 2);
-        const grad = perfCtx.createLinearGradient(0, top, 0, top + height);
+        const grad = ctx.createLinearGradient(0, top, 0, top + height);
         if (v >= 0) {
           grad.addColorStop(0, "#17d98e");
           grad.addColorStop(1, "#0c8f5e");
@@ -441,62 +453,89 @@
           grad.addColorStop(0, "#f2555c");
           grad.addColorStop(1, "#a83338");
         }
-        perfCtx.fillStyle = grad;
-        perfCtx.fillRect(x, top, barW, height);
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, top, barW, height);
 
-        perfCtx.fillStyle = "rgba(147,153,156,0.9)";
-        perfCtx.textAlign = "center";
-        perfCtx.fillText(months[i], padL + slot * i + slot / 2, h - 12);
+        ctx.fillStyle = "rgba(147,153,156,0.9)";
+        ctx.textAlign = "center";
+        ctx.fillText(set.labels[i], padL + slot * i + slot / 2, h - 12);
       });
-      perfCtx.textAlign = "left";
+      ctx.textAlign = "left";
     } else {
-      // line chart for cumulative
-      perfCtx.beginPath();
-      perfCtx.strokeStyle = "#17d98e";
-      perfCtx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.strokeStyle = "#17d98e";
+      ctx.lineWidth = 2.5;
       const slot = chartW / (data.length - 1);
       data.forEach((v, i) => {
         const x = padL + slot * i;
         const y = yFor(v);
-        if (i === 0) perfCtx.moveTo(x, y);
-        else perfCtx.lineTo(x, y);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
       });
-      perfCtx.stroke();
+      ctx.stroke();
 
-      // fill under line
       const lastX = padL + slot * (data.length - 1);
-      perfCtx.lineTo(lastX, zeroY);
-      perfCtx.lineTo(padL, zeroY);
-      perfCtx.closePath();
-      perfCtx.fillStyle = "rgba(23,217,142,0.12)";
-      perfCtx.fill();
+      ctx.lineTo(lastX, zeroY);
+      ctx.lineTo(padL, zeroY);
+      ctx.closePath();
+      ctx.fillStyle = "rgba(23,217,142,0.12)";
+      ctx.fill();
 
-      // points + month labels
-      perfCtx.fillStyle = "#17d98e";
+      ctx.fillStyle = "#17d98e";
       data.forEach((v, i) => {
         const x = padL + slot * i;
         const y = yFor(v);
-        perfCtx.beginPath();
-        perfCtx.arc(x, y, 3.5, 0, Math.PI * 2);
-        perfCtx.fill();
-        perfCtx.fillStyle = "rgba(147,153,156,0.9)";
-        perfCtx.textAlign = "center";
-        perfCtx.fillText(months[i], x, h - 12);
-        perfCtx.fillStyle = "#17d98e";
+        ctx.beginPath();
+        ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "rgba(147,153,156,0.9)";
+        ctx.textAlign = "center";
+        ctx.fillText(set.labels[i], x, h - 12);
+        ctx.fillStyle = "#17d98e";
       });
-      perfCtx.textAlign = "left";
+      ctx.textAlign = "left";
     }
   }
-  drawPerfChart();
 
-  const perfToggle = document.getElementById("perfToggle");
-  perfToggle.addEventListener("click", (e) => {
+  function drawAllPerfCharts() {
+    Object.keys(perfChartSets).forEach(drawPerfChart);
+  }
+  drawAllPerfCharts();
+
+  document.querySelectorAll(".perf-chart-toggle").forEach((toggle) => {
+    toggle.addEventListener("click", (e) => {
+      const btn = e.target.closest(".toggle__btn");
+      if (!btn) return;
+      const chartKey = toggle.dataset.chart;
+      toggle.querySelectorAll(".toggle__btn").forEach((b) => b.classList.remove("is-active"));
+      btn.classList.add("is-active");
+      perfChartSets[chartKey].mode = btn.dataset.mode;
+      drawPerfChart(chartKey);
+    });
+  });
+
+  const performanceTabs = document.getElementById("performanceTabs");
+  const performancePanels = document.querySelectorAll(".performance-panel");
+
+  performanceTabs.addEventListener("click", (e) => {
     const btn = e.target.closest(".toggle__btn");
     if (!btn) return;
-    perfToggle.querySelectorAll(".toggle__btn").forEach((b) => b.classList.remove("is-active"));
+    const panelKey = btn.dataset.panel;
+
+    performanceTabs.querySelectorAll(".toggle__btn").forEach((tab) => {
+      tab.classList.remove("is-active");
+      tab.setAttribute("aria-selected", "false");
+    });
     btn.classList.add("is-active");
-    perfMode = btn.dataset.mode;
-    drawPerfChart();
+    btn.setAttribute("aria-selected", "true");
+
+    performancePanels.forEach((panel) => {
+      const isActive = panel.dataset.panel === panelKey;
+      panel.classList.toggle("is-active", isActive);
+      panel.hidden = !isActive;
+    });
+
+    drawPerfChart(panelKey);
   });
 
   /* ---------- 7. RISK CALCULATOR ---------- */

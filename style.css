@@ -422,13 +422,26 @@ main, header, footer{ position:relative; z-index:2; }
 @keyframes flow-pulse{ 0%,100%{ opacity:0.4; transform:translateX(0); } 50%{ opacity:1; transform:translateX(4px); } }
 
 /* ---------- 12. PERFORMANCE ---------- */
+.performance-tabs{ display:flex; justify-content:center; margin:28px 0 36px; }
+.performance-tabs .toggle{ flex-wrap:wrap; justify-content:center; }
+.performance-panel{ display:none; }
+.performance-panel.is-active{ display:block; }
+.performance-panel .badge{ margin-bottom:40px; }
 .metric-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:18px; margin:44px 0 56px; }
+.metric-grid--exness{ margin-top:0; }
 .metric-card{
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md);
   padding:26px 20px; display:flex; flex-direction:column; gap:8px;
 }
+.metric-card--detailed{ gap:6px; padding-bottom:22px; }
 .metric-card__value{ font-family:var(--font-mono); font-size:26px; font-weight:700; color:var(--emerald); font-variant-numeric:tabular-nums; }
 .metric-card__label{ font-size:12.5px; color:var(--text-faint); }
+.metric-card__detail{
+  font-family:var(--font-mono); font-size:11.5px; color:var(--text-muted);
+  font-variant-numeric:tabular-nums; line-height:1.4;
+}
+.metric-card__detail--up{ color:var(--emerald); opacity:0.85; }
+.metric-card__detail--down{ color:var(--red); opacity:0.85; }
 .performance-summary{ display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin:-34px 0 56px; }
 .performance-summary--trades{ grid-template-columns:repeat(2,1fr); margin:22px 0 0; }
 .performance-summary__item{ background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius-sm); padding:16px; display:flex; flex-direction:column; gap:6px; }
