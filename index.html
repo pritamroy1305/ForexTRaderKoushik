@@ -65,14 +65,25 @@
     </div>
 
     <div class="hero__visual reveal">
-      <div class="terminal">
+      <div class="terminal terminal--portrait">
         <div class="terminal__bar">
           <div class="terminal__dots"><span></span><span></span><span></span></div>
           <span class="terminal__title">KOUSHIK-FX <span class="terminal__title-dim">// LIVE</span></span>
           <span class="badge badge--live"><span class="live-dot"></span>LIVE</span>
         </div>
 
-        <div class="terminal__chart">
+        <div class="terminal__portrait-panel">
+          <div class="terminal__portrait-frame">
+            <img src="Display pic.jpeg" alt="The Trader Koushik portrait" />
+          </div>
+          <div class="terminal__portrait-copy">
+            <span class="terminal__portrait-kicker">Precision Trading</span>
+            <h2>Discipline. Structure. Execution.</h2>
+            <p>Reading the market with patience, risk control, and conviction backed by process.</p>
+          </div>
+        </div>
+
+        <div class="terminal__chart terminal__chart--hidden">
           <canvas id="heroChart" width="640" height="300" aria-label="Live forex price chart" role="img"></canvas>
           <div class="chart-controls" role="group" aria-label="Live chart interval">
             <button type="button" class="chart-controls__button is-active" data-chart-interval="1H">1H</button>
